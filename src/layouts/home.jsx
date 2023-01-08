@@ -22,23 +22,23 @@ const Home = () => {
     dispatch(setCategoryId(id));
   };
 
-  const order = sortType.sortProperty.includes('-') ? 'asc' : 'desc';
-  const sortBy = sortType.sortProperty.replace('-', '');
-  const category = categoryId ? `category=${categoryId}` : '';
+  const fetchPizzas = async () => {
+    const order = sortType.sortProperty.includes('-') ? 'asc' : 'desc';
+    const sortBy = sortType.sortProperty.replace('-', '');
+    const category = categoryId ? `category=${categoryId}` : '';
+
+    const res = await axios.get(
+      `https://63a83f85100b7737b97a80c8.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}`
+    );
+    setItems(res.data);
+    setIsLoading(false);
+    window.scrollTo(0, 0);
+  };
 
   useEffect(() => {
     setIsLoading(true);
-
-    axios
-      .get(
-        `https://63a83f85100b7737b97a80c8.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}`
-      )
-      .then((res) => {
-        setItems(res.data);
-        setIsLoading(false);
-      });
-    window.scrollTo(0, 0);
-  }, [categoryId, sortType.sortProperty, category, sortBy, order, searchValue]);
+    fetchPizzas();
+  }, [categoryId, sortType.sortProperty, searchValue]);
 
   const pizzas = items
     .filter((obj) =>
