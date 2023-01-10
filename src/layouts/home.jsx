@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
 import { setCategoryId } from '../redux/slices/filterSlice';
+import { fetchPizzas } from '../redux/slices/pizzaSlice';
 import Categories from '../components/categories';
 import Sort from '../components/sort';
 import { Skeleton, PizzaBlock } from '../components/pizzaBlock';
@@ -9,35 +9,37 @@ import { Skeleton, PizzaBlock } from '../components/pizzaBlock';
 import { SearchContext } from '../App';
 
 const Home = () => {
+  const { items, status } = useSelector((state) => state.pizza);
+
   const { categoryId, sortType } = useSelector((state) => state.filter);
   const dispatch = useDispatch();
 
   const { searchValue } = useContext(SearchContext);
 
-  const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   // const [currentPage, setCurrentPage] = useState(0);
 
   const onClickCategory = (id) => {
     dispatch(setCategoryId(id));
   };
 
-  const fetchPizzas = async () => {
+  const getPizzas = async () => {
     const order = sortType.sortProperty.includes('-') ? 'asc' : 'desc';
     const sortBy = sortType.sortProperty.replace('-', '');
     const category = categoryId ? `category=${categoryId}` : '';
 
-    const res = await axios.get(
-      `https://63a83f85100b7737b97a80c8.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}`
+    dispatch(
+      fetchPizzas({
+        order,
+        sortBy,
+        category,
+      })
     );
-    setItems(res.data);
-    setIsLoading(false);
+
     window.scrollTo(0, 0);
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchPizzas();
+    getPizzas();
   }, [categoryId, sortType.sortProperty, searchValue]);
 
   const pizzas = items
@@ -56,7 +58,17 @@ const Home = () => {
         <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">{isLoading ? skeleton : pizzas}</div>
+      {status === 'error' ? (
+        <div className="content__error-info">
+          <h2>Пиццы не могут быть загружены 😕</h2>
+          <p>Проверьте подключение к интернету</p>
+        </div>
+      ) : (
+        <div className="content__items">
+          {status === 'loading' ? skeleton : pizzas}
+        </div>
+      )}
+
       {/* <Pagination onChangePage={(pageIndex) => setCurrentPage(pageIndex)} /> */}
     </div>
   );
