@@ -1,10 +1,16 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectFilter, setCategoryId } from '../redux/slices/filterSlice';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  selectFilter,
+  setCategoryId,
+  setFilters,
+} from '../redux/slices/filterSlice';
 import { fetchPizzas, selectorPizzaData } from '../redux/slices/pizzaSlice';
 import Categories from '../components/categories';
-import Sort from '../components/sort';
+import Sort, { popupList } from '../components/sort';
 import { Skeleton, PizzaBlock } from '../components/pizzaBlock';
+import qs from 'qs';
 // import { Pagination } from '../components/pagination';
 
 const Home = () => {
@@ -12,12 +18,34 @@ const Home = () => {
 
   const { categoryId, sortType, searchValue } = useSelector(selectFilter);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isSearch = useRef(false);
+  const isMounted = useRef(false);
 
   // const [currentPage, setCurrentPage] = useState(0);
 
   const onClickCategory = (id) => {
     dispatch(setCategoryId(id));
   };
+
+  useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+
+      const sortType = popupList.find(
+        (obj) => obj.sortProperty === params.sortProperty
+      );
+
+      dispatch(
+        setFilters({
+          ...params,
+          sortType,
+        })
+      );
+
+      isSearch.current = true;
+    }
+  }, []);
 
   const getPizzas = async () => {
     const order = sortType.sortProperty.includes('-') ? 'asc' : 'desc';
@@ -36,14 +64,33 @@ const Home = () => {
   };
 
   useEffect(() => {
-    getPizzas();
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortProperty: sortType.sortProperty,
+        categoryId,
+      });
+      navigate(`?${queryString}`);
+    }
+    isMounted.current = true;
+  }, [categoryId, sortType.sortProperty, searchValue]);
+
+  useEffect(() => {
+    if (!isSearch.current) {
+      getPizzas();
+    }
+
+    isSearch.current = false;
   }, [categoryId, sortType.sortProperty, searchValue]);
 
   const pizzas = items
     .filter((obj) =>
       obj.title.toLowerCase().includes(searchValue.toLowerCase())
     )
-    .map((pizza) => <PizzaBlock key={pizza.id} {...pizza} />);
+    .map((pizza) => (
+      <Link key={pizza.id} to={`/pizza/${pizza.id}`}>
+        <PizzaBlock {...pizza} />
+      </Link>
+    ));
   const skeleton = [...new Array(6)].map((_, skeletonIndex) => (
     <Skeleton key={skeletonIndex} />
   ));

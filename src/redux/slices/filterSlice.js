@@ -22,12 +22,17 @@ const filterSlice = createSlice({
     setSort(state, action) {
       state.sortType = action.payload;
     },
+    setFilters(state, action) {
+      state.categoryId = Number(action.payload.categoryId);
+      state.sortType = action.payload.sortType;
+    },
   },
 });
 
 export const selectFilter = (state) => state.filter;
 export const selectSort = (state) => state.filter.sortType;
 
-export const { setCategoryId, setSort, setSearchValue } = filterSlice.actions;
+export const { setCategoryId, setSort, setSearchValue, setFilters } =
+  filterSlice.actions;
 
 export default filterSlice.reducer;
