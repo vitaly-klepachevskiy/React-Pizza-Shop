@@ -1,6 +1,6 @@
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-import Header from './components/header';
 import { Cart, Home, NotFound, FullPizza } from './layouts';
 import MainLayout from './layouts/mainLayout';
 import './scss/app.scss';
