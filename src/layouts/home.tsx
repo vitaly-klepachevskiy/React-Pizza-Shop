@@ -13,7 +13,7 @@ import { Skeleton, PizzaBlock } from '../components/pizzaBlock';
 import qs from 'qs';
 // import { Pagination } from '../components/pagination';
 
-const Home = () => {
+const Home: React.FC = () => {
   const { items, status } = useSelector(selectorPizzaData);
 
   const { categoryId, sortType, searchValue } = useSelector(selectFilter);
@@ -24,8 +24,8 @@ const Home = () => {
 
   // const [currentPage, setCurrentPage] = useState(0);
 
-  const onClickCategory = (id) => {
-    dispatch(setCategoryId(id));
+  const onClickCategory = (index: number) => {
+    dispatch(setCategoryId(index));
   };
 
   useEffect(() => {
@@ -53,6 +53,7 @@ const Home = () => {
     const category = categoryId ? `category=${categoryId}` : '';
 
     dispatch(
+      // @ts-ignore
       fetchPizzas({
         order,
         sortBy,
@@ -83,10 +84,10 @@ const Home = () => {
   }, [categoryId, sortType.sortProperty, searchValue]);
 
   const pizzas = items
-    .filter((obj) =>
+    .filter((obj: any) =>
       obj.title.toLowerCase().includes(searchValue.toLowerCase())
     )
-    .map((pizza) => (
+    .map((pizza: any) => (
       <Link key={pizza.id} to={`/pizza/${pizza.id}`}>
         <PizzaBlock {...pizza} />
       </Link>
