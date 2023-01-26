@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../redux/store';
+import { useNavigate } from 'react-router-dom';
 import {
   selectFilter,
   setCategoryId,
@@ -17,7 +18,7 @@ const Home: React.FC = () => {
   const { items, status } = useSelector(selectorPizzaData);
 
   const { categoryId, sortType, searchValue } = useSelector(selectFilter);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isSearch = useRef(false);
   const isMounted = useRef(false);
@@ -36,12 +37,16 @@ const Home: React.FC = () => {
         (obj) => obj.sortProperty === params.sortProperty
       );
 
-      dispatch(
-        setFilters({
-          ...params,
-          sortType,
-        })
-      );
+      if (sortType) {
+        dispatch(
+          setFilters({
+            ...params,
+            sortType,
+            searchValue: '',
+            categoryId: 0,
+          })
+        );
+      }
 
       isSearch.current = true;
     }
@@ -53,7 +58,6 @@ const Home: React.FC = () => {
     const category = categoryId ? `category=${categoryId}` : '';
 
     dispatch(
-      // @ts-ignore
       fetchPizzas({
         order,
         sortBy,
@@ -87,11 +91,7 @@ const Home: React.FC = () => {
     .filter((obj: any) =>
       obj.title.toLowerCase().includes(searchValue.toLowerCase())
     )
-    .map((pizza: any) => (
-      <Link key={pizza.id} to={`/pizza/${pizza.id}`}>
-        <PizzaBlock {...pizza} />
-      </Link>
-    ));
+    .map((pizza: any) => <PizzaBlock {...pizza} />);
   const skeleton = [...new Array(6)].map((_, skeletonIndex) => (
     <Skeleton key={skeletonIndex} />
   ));
