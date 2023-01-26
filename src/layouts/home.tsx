@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../redux/store';
 import { useNavigate } from 'react-router-dom';
@@ -25,9 +25,10 @@ const Home: React.FC = () => {
 
   // const [currentPage, setCurrentPage] = useState(0);
 
-  const onClickCategory = (index: number) => {
+  const onClickCategory = useCallback((index: number) => {
+    console.log('Hi');
     dispatch(setCategoryId(index));
-  };
+  }, []);
 
   useEffect(() => {
     if (window.location.search) {
@@ -91,7 +92,7 @@ const Home: React.FC = () => {
     .filter((obj: any) =>
       obj.title.toLowerCase().includes(searchValue.toLowerCase())
     )
-    .map((pizza: any) => <PizzaBlock {...pizza} />);
+    .map((pizza: any) => <PizzaBlock key={pizza.id} {...pizza} />);
   const skeleton = [...new Array(6)].map((_, skeletonIndex) => (
     <Skeleton key={skeletonIndex} />
   ));
@@ -100,7 +101,7 @@ const Home: React.FC = () => {
     <div className="container">
       <div className="content__top">
         <Categories value={categoryId} onClickCategory={onClickCategory} />
-        <Sort />
+        <Sort value={sortType} />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       {status === 'error' ? (
