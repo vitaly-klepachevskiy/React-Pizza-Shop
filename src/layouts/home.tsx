@@ -2,12 +2,10 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../redux/store';
 import { useNavigate } from 'react-router-dom';
-import {
-  selectFilter,
-  setCategoryId,
-  setFilters,
-} from '../redux/slices/filterSlice';
-import { fetchPizzas, selectorPizzaData } from '../redux/slices/pizzaSlice';
+import { setCategoryId, setFilters } from '../redux/filter/slice';
+import { selectFilter } from '../redux/filter/selectors';
+import { fetchPizzas } from '../redux/pizza/asyncActions';
+import { selectorPizzaData } from '../redux/pizza/selectors';
 import Categories from '../components/categories';
 import Sort, { popupList } from '../components/sort';
 import { Skeleton, PizzaBlock } from '../components/pizzaBlock';
@@ -26,7 +24,6 @@ const Home: React.FC = () => {
   // const [currentPage, setCurrentPage] = useState(0);
 
   const onClickCategory = useCallback((index: number) => {
-    console.log('Hi');
     dispatch(setCategoryId(index));
   }, []);
 
