@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const FullPizza: React.FC = () => {
@@ -35,13 +36,12 @@ export const FullPizza: React.FC = () => {
     <div className="container">
       <img src={pizza.imageUrl} alt="pizza" />
       <h2>{pizza.title}</h2>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum quasi
-        officia ea itaque architecto exercitationem quisquam rem, soluta veniam
-        alias eius facere modi accusamus, dignissimos quas ducimus nulla!
-        Sapiente, perspiciatis?
-      </p>
       <h3>{pizza.price} ₽</h3>
+      <Link to="/">
+        <button className="button button--outline button--add">
+          <span>Назад</span>
+        </button>
+      </Link>
     </div>
   );
 };

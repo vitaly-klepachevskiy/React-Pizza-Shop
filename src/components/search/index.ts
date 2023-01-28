@@ -1,3 +1,1 @@
-import Search from './search';
-
-export { Search };
+export { default as Search } from './search';

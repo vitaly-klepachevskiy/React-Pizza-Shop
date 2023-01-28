@@ -1,4 +1,2 @@
-import PizzaBlock from './pizzaBlock';
-import Skeleton from './skeleton';
-
-export { PizzaBlock, Skeleton };
+export { default as PizzaBlock } from './pizzaBlock';
+export { default as Skeleton } from './skeleton';
